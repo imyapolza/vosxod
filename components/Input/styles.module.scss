@@ -1,0 +1,23 @@
+$white-color: #ffffff;
+
+.label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  color: $white-color;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.input {
+  margin-top: 10px;
+  background: #42484f;
+  box-shadow: 2px 2px 8px rgba(37, 37, 37, 0.25);
+  border-radius: 5px;
+  padding: 8px 10px;
+  color: $white-color;
+}
+
+.input::placeholder {
+  color: #b4b4b4;
+}

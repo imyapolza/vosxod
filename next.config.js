@@ -1,6 +1,9 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-}
+const withSvgr = require("next-plugin-svgr");
 
-module.exports = nextConfig
+/** @type {import('next').NextConfig} */
+
+module.exports = withSvgr({
+  webpack(config, options) {
+    return config;
+  },
+});

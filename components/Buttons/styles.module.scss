@@ -1,0 +1,13 @@
+.button__active {
+  background: #2e353b;
+}
+
+.buttons :nth-child(1n):not(:last-child) {
+  margin-right: 15px;
+}
+
+@media (max-width: 450px) {
+  .buttons {
+    display: flex;
+  }
+}
