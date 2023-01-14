@@ -1,31 +1,27 @@
 import MainContext from "context/MainContext";
-import { useContext, useEffect, useRef, useState } from "react";
+import React from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const useSocketForm = (data: ISocketData) => {
+  const [connectionLost, setConnectionLost] = useState<boolean>(false);
+
+  const { setConnectionLostPage } = useContext(MainContext);
+
   const [socket, setSocket] = useState(
     new WebSocket("wss://taxivoshod.ru:10011")
   );
 
-  const [connectionLost, setConnectionLost] = useState<boolean>(false);
-  const myInterval = useRef<NodeJS.Timer>();
-
-  const { setConnectionLostPage } = useContext(MainContext);
-
   const [disabledFieldInit, setDisabledFieldInit] = useState<
     Record<string, boolean>
   >({});
+
   const [disabledField, setDisabledField] = useState<string | null>(null);
   const [fieldValues, setFieldValues] = useState<FieldValues>({});
 
-  socket.onopen = function (e: Event) {
-    toast.success("[open] Соединение установлено");
-    setConnectionLost(false);
-
-    socket.send(JSON.stringify(data));
-  };
-
   const id = data.block.slice(-1);
+
+  const intervalReconnect = React.useRef<NodeJS.Timer>();
 
   useEffect(() => {
     const unsubscribeData = {
@@ -38,20 +34,12 @@ const useSocketForm = (data: ISocketData) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (connectionLost) {
-      setConnectionLostPage(true);
+  socket.onopen = function (e: Event) {
+    toast.success("Соединение установлено" + " " + e);
+    setConnectionLost(false);
 
-      myInterval.current = setInterval(() => {
-        setSocket(new WebSocket("wss://taxivoshod.ru:10011"));
-        toast.error("Попытка повторного подключения...");
-      }, 5000);
-    }
-
-    if (!connectionLost) {
-      clearInterval(myInterval.current);
-    }
-  }, [connectionLost, setConnectionLostPage]);
+    socket.send(JSON.stringify(data));
+  };
 
   socket.onmessage = function (event: MessageEvent) {
     const resp = JSON.parse(event.data);
@@ -79,7 +67,7 @@ const useSocketForm = (data: ISocketData) => {
 
   socket.onclose = function (event: CloseEvent) {
     if (event.wasClean) {
-      toast.success(
+      toast.error(
         `[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`
       );
     } else {
@@ -90,8 +78,24 @@ const useSocketForm = (data: ISocketData) => {
 
   socket.onerror = function (error: Event) {
     setConnectionLost(true);
-    toast.error(`[error]`);
+    toast.error(`Ошибка` + " " + error);
   };
+
+  useEffect(() => {
+    if (connectionLost) {
+      setConnectionLostPage(true);
+
+      intervalReconnect.current = setInterval(() => {
+        toast.error("Попытка повторного подключения...");
+
+        setSocket(new WebSocket("wss://taxivoshod.ru:10011"));
+      }, 5000);
+    }
+
+    if (!connectionLost) {
+      clearInterval(intervalReconnect.current);
+    }
+  }, [connectionLost]);
 
   const onChangeForm = (
     prev: FieldValues | Record<string, boolean>,

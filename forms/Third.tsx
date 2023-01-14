@@ -51,6 +51,7 @@ const Third = (): JSX.Element => {
         onChange={(e) => onChangeInput("index", 3, e)}
         readOnly={disabledField === "index" || disabledFieldInit.index}
         disabled={disabledField === "index" || disabledFieldInit.index}
+        type="number"
       />
     </Form>
   );

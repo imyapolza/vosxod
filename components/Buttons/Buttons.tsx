@@ -2,8 +2,6 @@ import Button from "components/Button/Button";
 import { onActiveButton } from "utils/page";
 import styles from "./styles.module.scss";
 import { buttons } from "constants/index";
-import { useContext } from "react";
-import MainContext from "context/MainContext";
 
 interface Props {
   activeButtons: Array<number>;

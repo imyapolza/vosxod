@@ -29,6 +29,7 @@ const Second = (): JSX.Element => {
         onChange={(e) => onChangeInput("birthday", 2, e)}
         readOnly={disabledField === "birthday" || disabledFieldInit.birthday}
         disabled={disabledField === "birthday" || disabledFieldInit.birthday}
+        type="date"
       />
       <Input
         label={SecondBlock.inputs.height.label}
